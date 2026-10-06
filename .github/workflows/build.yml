@@ -1,11 +1,11 @@
 name: Build Flet APK
 
 on:
-  workflow_dispatch: # Позволяет запускать сборку вручную
+  workflow_dispatch:
 
 jobs:
   build-apk:
-    runs-on: ubuntu-latest # Чистый Linux: никаких проблем с SSL и Windows!
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -15,16 +15,24 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install system dependencies (Java, etc.)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk zip unzip
+
+      - name: Install Flet
         run: |
           python -m pip install --upgrade pip
           pip install flet flet-cli
 
-      - name: Build APK
-        run: flet build apk
+      - name: Build APK (auto-accept prompts)
+        run: |
+          # Команда echo "y" автоматически отвечает "да" на все вопросы Flet
+          echo "y" | flet build apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: CarCalculator-APK
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
