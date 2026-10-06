@@ -23,12 +23,12 @@ jobs:
       - name: Install Flet
         run: |
           python -m pip install --upgrade pip
-          pip install flet flet-cli
+          pip install flet==1.0.3 flet-cli
 
       - name: Build APK (auto-accept prompts)
         run: |
-          # Команда echo "y" автоматически отвечает "да" на все вопросы Flet
-          echo "y" | flet build apk
+          # Принудительно отвечаем "y" на все вопросы
+          echo "y" | flet build apk --verbose
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
