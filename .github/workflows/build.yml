@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install system dependencies (Java, etc.)
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jdk zip unzip
@@ -25,9 +25,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install flet==1.0.3 flet-cli
 
-      - name: Build APK (auto-accept prompts)
+      - name: Force clean lock files
         run: |
-          # Принудительно отвечаем "y" на все вопросы
+          # Это критически важно: удаляем файлы, которые блокируют обновление jni
+          rm -f pubspec.lock
+          rm -f build/pubspec.lock
+          echo "Lock files removed"
+
+      - name: Build APK
+        run: |
           echo "y" | flet build apk --verbose
 
       - name: Upload APK
